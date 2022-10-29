@@ -1,5 +1,5 @@
 --- 
-title: "Exploring Academic Assessment Results for New York School Districts"
+title: "Exploring Academic Assessment Results of \\\n New York School Districts"
 author: "Soheil Fakhrieh Kashan / Wangtao Zheng"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
