@@ -1,6 +1,19 @@
 # Proposal
 
 ## Research topic
+This project explores the 2018/2019 academic achievement results for school districts of New York State. The main focus of this project is to visualize data, highlight strong correlations, and provide rankings based on different measures. We do not go beyond the boundaries of exploratory analysis.
+The academic assessment results are divided into two categories: results for State Assessment in Mathematics and results for State Assessment in Reading/Language Art. We explore the distribution of the assessment results across these measures:
+School district
+Racial and Ethnic Groups
+Sex
+Disability Status
+Economically Disadvantaged Status
+Migrant Status
+Homeless Enrolled Status
+Foster Care Status
+Military Connected Student Status
+We also provide a consolidated scoring to combine the Mathematics and Reading/Language Art. This is mainly a means to compare district performance holistically. The ultimate goal of the project is to provide a set of visualizations to provide the reader a view on how well different school districts of New York are performing across different subgroups of students. 
+
 
 ## Data availability
 
