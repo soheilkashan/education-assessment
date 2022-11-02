@@ -37,4 +37,3 @@ We also provide a consolidated scoring to combine the Mathematics and Reading/La
 
 **Data Transformation / Ingestion:** The data is reported on two different levels of aggregations: LEA level (local education authority) and School level. We are mostly interested in LEA level data for this analysis. There are also two different formats for the latest data: Wide (each value of a subgroup is a field), Long (each value of a subgroup has its own record). The wide format of the data is more suitable for our work but requires transformation. There are 262 variables on the wide version. We need to create new variables such as Race, Sex, Socio-ecomomic status, etc. to summairze the data properly. The data is needed to be consolidated across different years and different assessment types (Mathematics, Reading/Language Arts).
 All files are provided in csv format. We download the data and export it to the RStudio locally. 
-
