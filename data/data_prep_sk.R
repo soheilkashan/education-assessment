@@ -22,5 +22,5 @@ test$ALL_MTH00numvalid_1819 <- as.character(test$ALL_MTH00numvalid_1819)
 test_long <- pivot_longer(test, cols = 7:262 , 
                          names_to = c("v1","v2", "v3"), 
                          names_sep = "_",
-                         values_to = "income")
+                         values_to = "score")
 
