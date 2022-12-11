@@ -177,5 +177,12 @@ ny_edu <- rbind(ny_20_21,
                 ny_math17_18_long, ny_rla17_18_long,
                 ny_math16_17_long, ny_rla16_17_long,
                 ny_math15_16_long, ny_rla15_16_long)
-test
+
+write_csv(ny_edu, "~/Desktop/STATGR-5702/final_project_local/Proc_NY_MATH_RLA.csv")
+
+ny_edu2 <-
+  ny_edu %>%
+  separate(PCTPROF, c("num1", "num2"), "-")
+
+
 
