@@ -182,9 +182,29 @@ ny_edu <- rbind(ny_20_21,
 write_csv(ny_edu, "~/Desktop/STATGR-5702/final_project_local/Proc_NY_MATH_RLA.csv")
 
 #### note: after dowloading and reading the file follow from here:
-ny_edu2 <-
+
+ny_edu <- 
   ny_edu %>%
-  separate(PCTPROF, c("num1", "num2"), "-")
+  separate(PCTPROF, c("num1", "num2"), "-|LE|LT|GT|GE", remove =FALSE)
+
+## TODO: viz to show how many unreported scores we have
+ny_edu_ps <- filter(ny_edu, PCTPROF == "PS")
+
+## data without PS
+ny_edu_cl <- filter(ny_edu, PCTPROF != "PS")
+
+### we don't remove NAs for furthur analysis of missing values
+## ny_edu_cl <- filter(ny_edu_cl, !is.na(NUMVALID))
+
+ny_edu_cl$num1 <- as.numeric(ny_edu_cl$num1)
+ny_edu_cl$num2 <- as.numeric(ny_edu_cl$num2)
+ny_edu_cl$avg_num<- (ny_edu_cl$num1 + ny_edu_cl$num2) /2
+
+ny_edu_cl$PASSED <- coalesce(ny_edu_cl$avg_num, ny_edu_cl$num1, ny_edu_cl$num2)
+
+ny_edu_cl <- subset(ny_edu_cl, select = -c(num1, num2, avg_num))
+
+
 
 
 
