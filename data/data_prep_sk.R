@@ -181,6 +181,7 @@ ny_edu <- rbind(ny_20_21,
 
 write_csv(ny_edu, "~/Desktop/STATGR-5702/final_project_local/Proc_NY_MATH_RLA.csv")
 
+#### note: after dowloading and reading the file follow from here:
 ny_edu2 <-
   ny_edu %>%
   separate(PCTPROF, c("num1", "num2"), "-")
