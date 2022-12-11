@@ -46,6 +46,7 @@ ny_rla15_16 <- filter(rla15_16, STNAM == "NEW YORK")
 
 ### ny_math 2018-19
 ny_math18_19$ALL_MTH00numvalid_1819 <- as.character(ny_math18_19$ALL_MTH00numvalid_1819)
+
 ny_math18_19_long <- pivot_longer(ny_math18_19, cols = 7:262 , 
                                   names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
                                   names_sep = "_",
