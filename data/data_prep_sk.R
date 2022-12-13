@@ -188,22 +188,93 @@ ny_edu <-
   separate(PCTPROF, c("num1", "num2"), "-|LE|LT|GT|GE", remove =FALSE)
 
 ## TODO: viz to show how many unreported scores we have
-ny_edu_ps <- filter(ny_edu, PCTPROF == "PS")
+# ny_edu_ps <- filter(ny_edu, PCTPROF == "PS")
 
 ## data without PS
-ny_edu_cl <- filter(ny_edu, PCTPROF != "PS")
+# ny_edu_cl <- filter(ny_edu, PCTPROF != "PS")
 
 ### we don't remove NAs for furthur analysis of missing values
 ## ny_edu_cl <- filter(ny_edu_cl, !is.na(NUMVALID))
 
-ny_edu_cl$num1 <- as.numeric(ny_edu_cl$num1)
-ny_edu_cl$num2 <- as.numeric(ny_edu_cl$num2)
-ny_edu_cl$avg_num<- (ny_edu_cl$num1 + ny_edu_cl$num2) /2
+ny_edu$num1 <- as.numeric(ny_edu$num1)
+ny_edu$num2 <- as.numeric(ny_edu$num2)
+ny_edu$avg_num<- (ny_edu$num1 + ny_edu$num2) /2
 
-ny_edu_cl$PASSED <- coalesce(ny_edu_cl$avg_num, ny_edu_cl$num1, ny_edu_cl$num2)
+ny_edu$PASSED <- coalesce(ny_edu$avg_num, ny_edu$num1, ny_edu$num2)
 
-ny_edu_cl <- subset(ny_edu_cl, select = -c(num1, num2, avg_num))
+ny_edu <- subset(ny_edu, select = -c(num1, num2, avg_num))
 
+ny_edu <- 
+ny_edu %>%
+  mutate(
+    CATEGORY_DESC = case_when(
+      CATEGORY == "CWD" ~ "Children with disabilities ",
+      CATEGORY == "ECD" ~ "Economically disadvantaged",
+      CATEGORY == "F" ~ "Female",
+      CATEGORY == "FCS" ~ "Foster Care Status",
+      CATEGORY == "HOM" ~ "Homeless Enrolled",
+      CATEGORY == "LEP" ~ "English Learner",
+      CATEGORY == "M" ~ "Male",
+      CATEGORY == "MAM" ~ "American Indian/Alaska Native",
+      CATEGORY == "MAS" ~ "Asian/Pacific Islander",
+      CATEGORY == "MBL" ~ "Black",
+      CATEGORY == "MHI" ~ "Hispanic",
+      CATEGORY == "MIG" ~ "Migrant",
+      CATEGORY == "MIL" ~ "Military Connected Student Status",
+      CATEGORY == "MTR" ~ "Two or More Races",
+      CATEGORY == "MWH" ~ "White",
+      CATEGORY == "ALL" ~ "ALL"
+    )
+  )
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    CATEGORY_TPYE = case_when(
+      CATEGORY == "CWD" | CATEGORY == "FCS" | CATEGORY == "HOM"
+        | CATEGORY == "ECD" | CATEGORY == "LEP"  | CATEGORY == "MIG" 
+        | CATEGORY == "MIL" ~ "Special Status" ,
+      CATEGORY == "F" | CATEGORY == "M" ~ "Sex",
+      CATEGORY == "MAM" |
+      CATEGORY == "MAS" |
+      CATEGORY == "MBL" |
+      CATEGORY == "MHI" |
+      CATEGORY == "MTR" |
+      CATEGORY == "MWH" ~ "Race/Ethnicity",
+      CATEGORY == "ALL" ~ "ALL"
+    )
+  )
+
+
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    SCHOOL_YEAR = case_when(
+      SCHOOL_YEAR == '2020-2021' ~ "2020-21",
+      SCHOOL_YEAR == '1819' ~ "2018-19",
+      SCHOOL_YEAR == '1718' ~ "2017-18",
+      SCHOOL_YEAR == '1617' ~ "2016-17",
+      SCHOOL_YEAR == '1516' ~ "2015-16",
+    )
+  )
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    GRADE = case_when(
+      GRADE == "00" ~ "ALL",
+      TRUE ~ GRADE))
+
+ny_edu <- 
+  ny_edu %>% 
+    rename( "Distriect" = "LEANM")
+
+ny_edu_final <- subset(ny_edu, select = -c(STNAM, LEAID, ST_LEAID, DATE_CUR))
+###########################
+### END of data prep
+
+ny_edu_final
 
 
 

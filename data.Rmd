@@ -1,4 +1,5 @@
 # Data 
+who is responsible for collecting the data? How is it collected? If there were a choice of options, explain how you chose
 
 ## Sources
 
