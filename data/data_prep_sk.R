@@ -179,7 +179,7 @@ ny_edu <- rbind(ny_20_21,
                 ny_math16_17_long, ny_rla16_17_long,
                 ny_math15_16_long, ny_rla15_16_long)
 
-write_csv(ny_edu, "~/Desktop/STATGR-5702/final_project_local/Proc_NY_MATH_RLA.csv")
+
 
 #### note: after dowloading and reading the file follow from here:
 
@@ -268,14 +268,213 @@ ny_edu <-
 
 ny_edu <- 
   ny_edu %>% 
-    rename( "Distriect" = "LEANM")
+    rename( "District" = "LEANM")
 
 ny_edu_final <- subset(ny_edu, select = -c(STNAM, LEAID, ST_LEAID, DATE_CUR))
+ny_edu_final$NUMVALID <- as.numeric(ny_edu_final$NUMVALID)
+ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
+
+
+
 ###########################
 ### END of data prep
 
-ny_edu_final
+options(scipen = 999)
+ny_edu_final |>
+  filter(GRADE == "ALL", CATEGORY == "ALL") |>
+  group_by(SCHOOL_YEAR, SUBJECT) |>
+  summarise(Students_Count = sum(NUMVALID)) |>
+  
+  ggplot(aes(x = SCHOOL_YEAR, y = Students_Count, fill = SUBJECT))+
+  geom_bar(stat = "identity", position = "dodge")+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+####### numbers by grade
+ny_edu_final |>
+  filter( GRADE != "ALL", SUBJECT == "MTH") |>
+  group_by(GRADE, SUBJECT, SCHOOL_YEAR) |>
+  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
+  
+  ggplot(aes(x = GRADE, y = Students_Count))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  facet_wrap(~SCHOOL_YEAR)+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+##### numbers by categories
 
 
+### students by status
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Special Status") |>
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(coalesce(NUMVALID, 0) )) |>
+  ungroup() |>
+  group_by() |>
+  mutate(total = round((Students_Count/sum(Students_Count, na.rm=TRUE)),4)*100 ) |>
+  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Distribution of New York Stduents by Status (2015-2021)')+
+  labs(x='Status Type', y='Percentage')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")+
+  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
+  annotate("label", x=5.5, y=50, 
+    label= 
+"ECD: Economically disadvantaged 
+CWD: Children with disabilities
+LEP: English Learner
+HOM: Homeless Enrolled
+FCS: Foster Care Status
+MIG: Migrant
+MIL: Military Connected Student Status")
+
+
+### students by Gender
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Sex") |>
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
+  ungroup() |>
+  group_by() |>
+  mutate(total = round((Students_Count/sum(Students_Count)),2) ) |>
+  
+  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Distribution of New York Stduents by Sex (2015-2021)')+
+  labs(x='Sex', y='Percentage')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")+
+  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)
+
+### students by Gender
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity") |>
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
+  ungroup() |>
+  group_by() |>
+  mutate(total = round((Students_Count/sum(Students_Count)),2) ) |>
+  
+  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Distribution of New York Stduents by Race/Ethnicity (2015-2021)')+
+  labs(x='Race/Ethnicity', y='Percentage')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")+
+  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
+  annotate("label", x=4.5, y=.35, 
+           label= 
+ 
+"MWH: White
+MHI: Hispanic
+MBL: Black
+MAS: Asian/Pacific Islander
+MTR: Two or more races
+MAM: American Indian/Alaska Native")
+
+
+
+######### histogram of district size
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL") |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram(bins = 20, fill ="#33a02c", color='black')+
+  facet_wrap(~SCHOOL_YEAR)+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>=3000) |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram( bins=10, color='black', fill='#33a02c')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID<3000) |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram( bins=10, color='black', fill='#33a02c')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+### big school districts
+ny_edu_final |>
+  filter( GRADE != "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>3000) |>
+  ggplot(aes(GRADE, NUMVALID))+
+  geom_boxplot(  color='black', fill='#33a02c')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+
+##### Performance
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = SCHOOL_YEAR)) + geom_density_ridges2()+
+  facet_wrap(~SUBJECT)
+  
+
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = GRADE)) + geom_density_ridges2()+
+  facet_wrap(~SUBJECT)
+
+
+#### box plot of students status
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Special Status",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED) )) + 
+  geom_boxplot()+
+  facet_wrap(~SUBJECT)
+
+#### box plot sex by grade
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Sex",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED, median) )) + 
+  geom_boxplot()+
+  facet_grid(SUBJECT~GRADE)
+
+### box plot race by subject
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY_DESC, PASSED, median, na.rm = TRUE) )) + 
+  geom_boxplot()
+
+### all categories
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", 
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED, median, na.rm = TRUE) )) + 
+  geom_boxplot()
+
+
+### cleaveland plot schools
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY == "ALL",
+          PASSED>90, NUMVALID < 3000, SCHOOL_YEAR == '2018-19') |>
+  ggplot( aes(y = reorder(District, PASSED), x = PASSED)) + 
+  geom_point()+
+  facet_wrap(~SUBJECT)+
+  labs(x='Percentage of Passed Assesment', y='School District')+
+  theme_bw()
+
+  
+  ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL",
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
+    facet_wrap(~SUBJECT)+
+  labs(x='Percentage of Passed Assesment', y='School District')+
+    theme_bw()
 
 
