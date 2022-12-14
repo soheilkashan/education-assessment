@@ -307,3 +307,31 @@ MTR: Two or more races
 MAM: American Indian/Alaska Native")
 
 ```
+```{r}
+
+  g_math <-
+  ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'MTH',
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
+
+  labs(x='Percentage of Passed Assesment', y='School District')+
+    theme_bw()
+
+
+  g_rla <-
+    ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'RLA',
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
+    
+    labs(x='Percentage of Passed Assesment', y='School District')+
+    theme_bw()
+  
+  library(gridExtra)
+  library(grid)
+  grid.arrange(g_math, g_rla, nrow = 1)
+```
+

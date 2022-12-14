@@ -24,7 +24,7 @@ New York School Districts" />
 <meta name="author" content="Soheil Fakhrieh Kashan / Wangtao Zheng" />
 
 
-<meta name="date" content="2022-12-13" />
+<meta name="date" content="2022-12-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -110,15 +110,74 @@ New York School Districts</a>
             <section class="normal" id="section-">
 <div id="data" class="section level1 hasAnchor" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Data<a href="data.html#data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>who is responsible for collecting the data? How is it collected? If there were a choice of options, explain how you chose</p>
 <div id="sources" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Sources<a href="data.html#sources" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data is collected by the Department of Education through annual district and state reports. It is being renewed/updated annually in each school year; the dataset includes academic performance data ranging from school year 2009-2010 to school year 2020-2021. At the time that we wrote our proposal the data for the 2020-21 school year was not available, but this data became available recently. We have incorporated this data in our analysis as well. Due to COIVID the Department of Education has waived the reporting requirements for the 2019-20 school year. There isn’t any data available for this year. Also, for the 2020-21 school year the participation rate is varied and we have many school districts with missing data. This pattern is explored in our result section.
+For this project we will be focusing on The state of New York for the past 5 years.</p>
+<p><strong>Link to Source:</strong> <a href="https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html" class="uri">https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html</a></p>
+<p><strong>Datasets:</strong></p>
+<ol style="list-style-type: decimal">
+<li>SY 2020-21 Achievement Results for State Assessments in Mathematics (LEA)</li>
+<li>SY 2020-21 Achievement Results for State Assessments in Mathematics (LEA)</li>
+<li>SY 2018-19 Achievement Results for State Assessments in Mathematics (LEA - Wide file)</li>
+<li>SY 2018-19 Achievement Results for State Assessments in Reading/Language Arts (LEA - Wide file)</li>
+<li>SY 2017-18 Achievement Results for State Assessments in Mathematics (LEA)</li>
+<li>SY 2017-18 Achievement Results for State Assessments in Reading/Language Arts (LEA)</li>
+<li>SY 2016-17 Achievement Results for State Assessments in Mathematics (LEA)</li>
+<li>SY 2016-17 Achievement Results for State Assessments in Reading/Language Arts (LEA)</li>
+<li>SY 2015-16 Achievement Results for State Assessments in Mathematics (LEA)</li>
+<li>SY 2015-16 Achievement Results for State Assessments in Reading/Language Arts (LEA)</li>
+</ol>
 </div>
 <div id="cleaning-transformation" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Cleaning / transformation<a href="data.html#cleaning-transformation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>Link to data transformation script: </strong> <a href="https://github.com/soheilkashan/education-assessment/blob/main/data/data_prep_sk.R" class="uri">https://github.com/soheilkashan/education-assessment/blob/main/data/data_prep_sk.R</a></p>
+<p>The data is reported on two different levels of aggregations: LEA level (local education authority) and School level. We are mostly interested in LEA level data for this analysis. Mathematics State Assessments results and Reading/Language Arts are also se into two files. There are two different formats for the latest data: Wide (each value of a subgroup is a field), Long (each value of a subgroup has its own record). Throughout the years there are some inconsistencies</p>
+<p>We have spent a considerable amount of our time transforming and preparing the data for visualization. We will explain some of the challenges we face here.
+The data is reported on two different levels of aggregations: LEA level (local education authority) and School level. We are mostly interested in LEA level data for this analysis. Mathematics State Assessments results and Reading/Language Arts are also separated into two files. We have filtered the data to include only the state of New York. There are two different formats for the latest data: Wide (each value of a subgroup is a field), Long (each value of a subgroup has its own record). Throughout the years there are some inconsistencies in the data formats. Some years the data is only reported in wide format and some years only in long format.
+The wide format usually contains 260+ variables. The variables are the combination of categories (race, gender, special status, etc.), school year, grade, and the metric.
+After exploring different options we have decided to transform all of the wide data to the long format.</p>
+<p>Another challenge with our data was the grouping and masking of the “Percentage of Proficient” metric. Due to privacy reasons to protect the identities of students.
+The Percent Proficient is reported as “PS” if the number of students is less than 5. If the number of students are between 6 and 15 the Percent Proficient is only reporting more than or less than 50%. For some of our analysis we have removed these rows but kept the data for demographic analysis of the data. For reporting groups with students less than 300, the data is reported in ranges. We have used the mean of the range to calculate the Percent Proficient.</p>
+<p>Category variable in our data contains all student types descriptors (race, ethnicity, sex, and socioeconomic status). We have appended a category description and a category type to help us map the data easier. One of the biggest drawbacks in the data is that due to the reporting method for categories, we cannot perform analysis on the cross section of different categories. For example, we cannot analyze the relationship between socioeconomic and race and the impact of that on education assessment results.</p>
+<p>After the transformations we have a data set with 10 variables and 883K rows.</p>
+<ul>
+<li><strong>SCHOOL_YEAR:</strong> reporting school year</li>
+<li><strong>DISTRICT:</strong> NY school district name</li>
+<li><strong>SUBJECT:</strong> MTH for mathematics and RLA for reading / language arts</li>
+<li><strong>GRADE:</strong> school grades including HS for high school</li>
+<li><strong>CATEGORY:</strong> abbreviated student category includes race, ethnicity, socioeconomic status, sex, etc.</li>
+<li><strong>CATEGORY_DESC:</strong> student category description</li>
+<li><strong>CATEGORY_TPYE:</strong> category type includes race/ethinicity, sex, special status</li>
+<li><strong>NUMVALID:</strong> number of students</li>
+<li><strong>PCTPROF:</strong> percentage of students proficient in the assessment reported in the data with ranges and masked data</li>
+<li><strong>PASSED:</strong> transformed percentage of students proficient converted to numeric</li>
+</ul>
+<p><strong>Link to the 2020-21 documentation: </strong>
+<a href="https://www2.ed.gov/about/inits/ed/edfacts/data-files/assessments-sy2020-21-public-file-documentation.docx" class="uri">https://www2.ed.gov/about/inits/ed/edfacts/data-files/assessments-sy2020-21-public-file-documentation.docx</a></p>
 </div>
 <div id="missing-value-analysis" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Missing value analysis<a href="data.html#missing-value-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As discussed in the previous part, if the student numbers are less than 5 in a category / grade for a district, the Percent Proficient numbers are masked to protect the students identity. Although this is not null values in the data we cannot perform any analysis at the performance level. In this graph we are exploring what student category is impacted most by the suppression of data.
+We can see that students with two or more races (MTR) are impacted the most by the masking of the data. There are more that 50k students in total that their proficiency results are not available over the 5 year school period that we have done our analysis. This graph can also indicate student bodies that are the most sparsely distributed among all districts / categories. While we might not be able to fully analyze the impact of the masked data on the performance results we have highlighted this missing data here.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>As a result of the data structure and the transformations outlined before null values were generated for the PASSED variable (numeric value of Percent Proficient). If the Percent Proficient is marked as PS we have a null value for PASSED. If in the wide format a Percent Proficient is not reported for a grade or category we will also have a null value. We have also observed that there are very small school districts with only high school grades and all other grades are missing. It appears that some districts might not offer all grades but the data is reported as missing for these districts. Further discussion with subject matter experts needed to clarify school district boundaries and reporting requirements to fully understand the missing data patterns. Here we have used the VIM package to visualize the missing data pattern. If NUMVLAID (student number) is missing we always have missing values for PASSED (32% of data). The scenario when we have missing data for PASSED but the NUMVALID is not missing is due to the transformation of PS (suppressed data for privacy protection). We have converted PS to null values so we can have a numeric value for the PASSED variable (this is about 19% of data).</p>
+<pre><code>## 
+##  Variables sorted by number of missings: 
+##       Variable     Count
+##         PASSED 0.5136946
+##       NUMVALID 0.3299079
+##    SCHOOL_YEAR 0.0000000
+##          FIPST 0.0000000
+##       District 0.0000000
+##        SUBJECT 0.0000000
+##          GRADE 0.0000000
+##       CATEGORY 0.0000000
+##        PCTPROF 0.0000000
+##  CATEGORY_DESC 0.0000000
+##  CATEGORY_TPYE 0.0000000</code></pre>
+<pre><code>## Error in aggr(ny_edu_final, sortVars = TRUE, cex.axis = 0.8, oma = c(10, : non-numeric argument to binary operator</code></pre>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 
 </div>
 </div>

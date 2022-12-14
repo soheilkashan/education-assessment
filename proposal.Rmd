@@ -22,7 +22,7 @@ We also provide a consolidated scoring to combine the Mathematics and Reading/La
 
 **Data Source:**  As part of the EDFact initiative of U.S. Department of Education data on the academic assessment is being collected and centralized across states and schools. This data is meant to be a high quality and vetted data source that is being used for policymaking and education planning. 
 
-**Source:**  https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html
+**Link to Source:**  https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html
 
 **Datasets:**
 

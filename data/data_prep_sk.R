@@ -467,14 +467,60 @@ ny_edu_final |>
   labs(x='Percentage of Passed Assesment', y='School District')+
   theme_bw()
 
-  
+  g_math <-
   ny_edu_final |>
-    filter( GRADE == "ALL", CATEGORY == "ALL",
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'MTH',
             PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
     ggplot() + 
     geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
-    facet_wrap(~SUBJECT)+
+
   labs(x='Percentage of Passed Assesment', y='School District')+
     theme_bw()
 
+  g_rla <-
+    ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'RLA',
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
+    
+    labs(x='Percentage of Passed Assesment', y='School District')+
+    theme_bw()
+  
+  library(gridExtra)
+  library(grid)
+  grid.arrange(g_math, g_rla)
 
+  
+  #### math vs rla
+  
+
+  
+ny_edu_sub <- filter(ny_edu_final,  GRADE == "ALL", CATEGORY == "ALL")
+ny_edu_sub  <- subset(ny_edu_sub, select = c(District, SUBJECT, PASSED, SCHOOL_YEAR))
+ny_edu_sub <- pivot_wider(ny_edu_sub, names_from = SUBJECT, values_from = PASSED)
+ ny_edu_sub  |>
+    ggplot(aes(x=MTH,y=RLA ))+
+    geom_point(alpha=0.3)+
+   geom_smooth(method=lm, se=FALSE)
+
+ 
+### ethnicity by grades
+
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity",
+          NUMVALID>10, SCHOOL_YEAR=='2018-19') |>
+  ggplot(aes(CATEGORY, GRADE, fill =PASSED))+
+  scale_fill_gradient(low = "#e0ecf4", high = '#8856a7') + 
+  geom_tile()
+
+
+
+
+ 
+
+
+
+ 
+ 
+ 

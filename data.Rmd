@@ -1,9 +1,386 @@
 # Data 
-who is responsible for collecting the data? How is it collected? If there were a choice of options, explain how you chose
 
 ## Sources
 
+The data is collected by the Department of Education through annual district and state reports. It is being renewed/updated annually in each school year; the dataset includes academic performance data ranging from school year 2009-2010 to school year 2020-2021. At the time that we wrote our proposal the data for the 2020-21 school year was not available, but this data became available recently. We have incorporated this data in our analysis as well. Due to COIVID the Department of Education has waived the reporting requirements for the 2019-20 school year. There isn't any data available for this year. Also, for the 2020-21 school year the participation rate is varied and we have many school districts with missing data. This pattern is explored in our result section. 
+For this project we will be focusing on The state of New York for the past 5 years.
+
+
+**Link to Source:**  https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html
+
+**Datasets:**
+
+1. SY 2020-21 Achievement Results for State Assessments in Mathematics (LEA)
+2. SY 2020-21 Achievement Results for State Assessments in Mathematics (LEA)
+3. SY 2018-19 Achievement Results for State Assessments in Mathematics (LEA - Wide file)
+4. SY 2018-19 Achievement Results for State Assessments in Reading/Language Arts (LEA - Wide file)
+5. SY 2017-18 Achievement Results for State Assessments in Mathematics (LEA)
+6. SY 2017-18 Achievement Results for State Assessments in Reading/Language Arts (LEA)
+7. SY 2016-17 Achievement Results for State Assessments in Mathematics (LEA)
+8. SY 2016-17 Achievement Results for State Assessments in Reading/Language Arts (LEA)
+9. SY 2015-16 Achievement Results for State Assessments in Mathematics (LEA)
+10. SY 2015-16 Achievement Results for State Assessments in Reading/Language Arts (LEA)
+
+
 ## Cleaning / transformation
+
+**Link to data transformation script: ** https://github.com/soheilkashan/education-assessment/blob/main/data/data_prep_sk.R
+
+
+The data is reported on two different levels of aggregations: LEA level (local education authority) and School level. We are mostly interested in LEA level data for this analysis. Mathematics State Assessments results and Reading/Language Arts are also se into two files. There are two different formats for the latest data: Wide (each value of a subgroup is a field), Long (each value of a subgroup has its own record). Throughout the years there are some inconsistencies 
+
+
+We have spent a considerable amount of our time transforming and preparing the data for visualization. We will explain some of the challenges we face here.
+The data is reported on two different levels of aggregations: LEA level (local education authority) and School level. We are mostly interested in LEA level data for this analysis. Mathematics State Assessments results and Reading/Language Arts are also separated into two files. We have filtered the data to include only the state of New York. There are two different formats for the latest data: Wide (each value of a subgroup is a field), Long (each value of a subgroup has its own record). Throughout the years there are some inconsistencies in the data formats. Some years the data is only reported in wide format and some years only in long format. 
+The wide format usually contains 260+ variables. The variables are the combination of categories (race, gender, special status, etc.), school year, grade, and the metric. 
+After exploring different options we have decided to transform all of the wide data to the long format. 
+
+Another challenge with our data was the grouping and masking of the “Percentage of Proficient” metric. Due to privacy reasons to protect the identities of students.
+The Percent Proficient is reported as “PS” if  the number of students is less than 5. If the number of students are between 6 and 15 the Percent Proficient is only reporting more than or less than 50%. For some of our analysis we have removed these rows but kept the data for demographic analysis of the data. For reporting groups with students less than 300, the data is reported in ranges. We have used the mean of the range to calculate the Percent Proficient. 
+
+Category variable in our data contains all student types descriptors (race, ethnicity, sex, and socioeconomic status). We have appended a category description and a category type to help us map the data easier. One of the biggest drawbacks in the data is that due to the reporting method for categories, we cannot perform analysis on the cross section of different categories. For example, we cannot analyze the relationship between socioeconomic and race and the impact of that on education assessment results. 
+
+After the transformations we have a data set with 10 variables and 883K rows.
+
+ * **SCHOOL_YEAR:** reporting school year
+ * **DISTRICT:** NY school district name
+ * **SUBJECT:** MTH for mathematics and RLA for reading / language arts
+ * **GRADE:** school grades including HS for high school
+ * **CATEGORY:** abbreviated student category includes race, ethnicity, socioeconomic status, sex, etc. 
+ * **CATEGORY_DESC:** student category description
+ * **CATEGORY_TPYE:** category type includes race/ethinicity, sex, special status 
+ * **NUMVALID:** number of students 
+ * **PCTPROF:** percentage of students proficient in the assessment reported in the data with ranges and masked data
+ * **PASSED:** transformed percentage of students proficient converted to numeric 
+
+**Link to the 2020-21 documentation: **
+https://www2.ed.gov/about/inits/ed/edfacts/data-files/assessments-sy2020-21-public-file-documentation.docx
+
+ 
 
 ## Missing value analysis
 
+``` {r}
+## reading raw data from school year 2016 to 2019
+## source:  https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html
+
+# Long format
+math20_21 <- read.csv("~/Desktop/STATGR-5702/final_project_local/math-achievement-lea-sy2020-21.csv")
+rla20_21 <- read.csv("~/Desktop/STATGR-5702/final_project_local//rla-achievement-lea-sy2020-21.csv")
+
+# wide format
+math18_19 <- read.csv("~/Desktop/STATGR-5702/final_project_local//math-achievement-lea-sy2018-19-wide.csv")
+rla18_19 <- read.csv("~/Desktop/STATGR-5702/final_project_local//rla-achievement-lea-sy2018-19-wide.csv")
+math17_18 <- read.csv("~/Desktop/STATGR-5702/final_project_local//math-achievement-lea-sy2017-18.csv")
+rla17_18 <- read.csv("~/Desktop/STATGR-5702/final_project_local//rla-achievement-lea-sy2017-18.csv")
+math16_17 <- read.csv("~/Desktop/STATGR-5702/final_project_local//math-achievement-lea-sy2016-17.csv")
+rla16_17 <- read.csv("~/Desktop/STATGR-5702/final_project_local//rla-achievement-lea-sy2016-17.csv")
+math15_16 <- read.csv("~/Desktop/STATGR-5702/final_project_local//math-achievement-lea-sy2015-16.csv")
+rla15_16 <- read.csv("~/Desktop/STATGR-5702/final_project_local//rla-achievement-lea-sy2015-16.csv")
+
+library(dplyr)
+library(tidyverse)
+library(stringr) 
+ny_math20_21 <- filter(math20_21, STNAM == "NEW YORK")
+ny_rla20_21 <- filter(rla20_21, STNAM == "NEW YORK")
+ny_20_21 <- rbind(ny_math20_21, ny_rla20_21)
+
+ny_math18_19 <- filter(math18_19, STNAM == "NEW YORK")
+ny_rla18_19 <- filter(rla18_19, STNAM == "NEW YORK")
+
+
+ny_math17_18 <- filter(math17_18, STNAM == "NEW YORK")
+ny_rla17_18 <- filter(rla17_18, STNAM == "NEW YORK")
+
+
+ny_math16_17 <- filter(math16_17, STNAM == "NEW YORK")
+ny_rla16_17 <- filter(rla16_17, STNAM == "NEW YORK")
+
+
+ny_math15_16 <- filter(math15_16, STNAM == "NEW YORK")
+ny_rla15_16 <- filter(rla15_16, STNAM == "NEW YORK")
+
+
+## test  <- filter(ny_math18_19, ST_LEAID == 'NY-211003040000')
+## test$ALL_MTH00numvalid_1819 <- as.character(test$ALL_MTH00numvalid_1819)
+
+
+
+
+### ny_math 2018-19
+ny_math18_19$ALL_MTH00numvalid_1819 <- as.character(ny_math18_19$ALL_MTH00numvalid_1819)
+
+ny_math18_19_long <- pivot_longer(ny_math18_19, cols = 7:262 , 
+                                  names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                  names_sep = "_",
+                                  values_to = "score")
+ny_math18_19_long$SUBJECT <- str_sub(ny_math18_19_long$v2, 1,3) 
+ny_math18_19_long$GRADE <- str_sub(ny_math18_19_long$v2, 4,5) 
+ny_math18_19_long$score_type <- str_sub(ny_math18_19_long$v2, 6) 
+ny_math18_19_long$score_type  = toupper(ny_math18_19_long$score_type)
+ny_math18_19_long <- subset(ny_math18_19_long, select = -v2)
+
+ny_math18_19_long <- pivot_wider(ny_math18_19_long, names_from = score_type,
+                                 values_from = score )
+
+### ny rla 2018-19
+ny_rla18_19$ALL_RLA00numvalid_1819 <- as.character(ny_rla18_19$ALL_RLA00numvalid_1819)
+ny_rla18_19_long <- pivot_longer(ny_rla18_19, cols = 7:262 , 
+                                 names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                 names_sep = "_",
+                                 values_to = "score")
+ny_rla18_19_long$SUBJECT <- str_sub(ny_rla18_19_long$v2, 1,3) 
+ny_rla18_19_long$GRADE <- str_sub(ny_rla18_19_long$v2, 4,5) 
+ny_rla18_19_long$score_type <- str_sub(ny_rla18_19_long$v2, 6) 
+ny_rla18_19_long$score_type  = toupper(ny_rla18_19_long$score_type)
+ny_rla18_19_long <- subset(ny_rla18_19_long, select = -v2)
+
+ny_rla18_19_long <- pivot_wider(ny_rla18_19_long, names_from = score_type,
+                                values_from = score )
+
+### ny math 2017-18
+ny_math17_18$ALL_MTH00NUMVALID_1718 <- as.character(ny_math17_18$ALL_MTH00NUMVALID_1718)
+
+ny_math17_18_long <- pivot_longer(ny_math17_18, cols = 7:262 , 
+                                  names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                  names_sep = "_",
+                                  values_to = "score")
+ny_math17_18_long$SUBJECT <- str_sub(ny_math17_18_long$v2, 1,3) 
+ny_math17_18_long$GRADE <- str_sub(ny_math17_18_long$v2, 4,5) 
+ny_math17_18_long$score_type <- str_sub(ny_math17_18_long$v2, 6) 
+ny_math17_18_long$score_type  = toupper(ny_math17_18_long$score_type)
+ny_math17_18_long <- subset(ny_math17_18_long, select = -v2)
+
+ny_math17_18_long <- pivot_wider(ny_math17_18_long, names_from = score_type,
+                                 values_from = score )
+
+### ny rla 2017-18
+ny_rla17_18$ALL_RLA00NUMVALID_1718 <- as.character(ny_rla17_18$ALL_RLA00NUMVALID_1718)
+ny_rla17_18_long <- pivot_longer(ny_rla17_18, cols = 7:262 , 
+                                 names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                 names_sep = "_",
+                                 values_to = "score")
+ny_rla17_18_long$SUBJECT <- str_sub(ny_rla17_18_long$v2, 1,3) 
+ny_rla17_18_long$GRADE <- str_sub(ny_rla17_18_long$v2, 4,5) 
+ny_rla17_18_long$score_type <- str_sub(ny_rla17_18_long$v2, 6) 
+ny_rla17_18_long$score_type  = toupper(ny_rla17_18_long$score_type)
+ny_rla17_18_long <- subset(ny_rla17_18_long, select = -v2)
+
+ny_rla17_18_long <- pivot_wider(ny_rla17_18_long, names_from = score_type,
+                                values_from = score )
+
+
+
+
+### ny math 2016-17
+ny_math16_17$ALL_MTH00NUMVALID_1617 <- as.character(ny_math16_17$ALL_MTH00NUMVALID_1617)
+
+ny_math16_17_long <- pivot_longer(ny_math16_17, cols = 7:230 , 
+                                  names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                  names_sep = "_",
+                                  values_to = "score")
+ny_math16_17_long$SUBJECT <- str_sub(ny_math16_17_long$v2, 1,3) 
+ny_math16_17_long$GRADE <- str_sub(ny_math16_17_long$v2, 4,5) 
+ny_math16_17_long$score_type <- str_sub(ny_math16_17_long$v2, 6) 
+ny_math16_17_long$score_type  = toupper(ny_math16_17_long$score_type)
+ny_math16_17_long <- subset(ny_math16_17_long, select = -v2)
+
+ny_math16_17_long <- pivot_wider(ny_math16_17_long, names_from = score_type,
+                                 values_from = score )
+
+### ny rla 2016-17
+ny_rla16_17$ALL_RLA00NUMVALID_1617 <- as.character(ny_rla16_17$ALL_RLA00NUMVALID_1617)
+ny_rla16_17_long <- pivot_longer(ny_rla16_17, cols = 7:230 , 
+                                 names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                 names_sep = "_",
+                                 values_to = "score")
+ny_rla16_17_long$SUBJECT <- str_sub(ny_rla16_17_long$v2, 1,3) 
+ny_rla16_17_long$GRADE <- str_sub(ny_rla16_17_long$v2, 4,5) 
+ny_rla16_17_long$score_type <- str_sub(ny_rla16_17_long$v2, 6) 
+ny_rla16_17_long$score_type  = toupper(ny_rla16_17_long$score_type)
+ny_rla16_17_long <- subset(ny_rla16_17_long, select = -v2)
+
+ny_rla16_17_long <- pivot_wider(ny_rla16_17_long, names_from = score_type,
+                                values_from = score )
+
+### ny math 2015-16
+ny_math15_16$ALL_MTH00NUMVALID_1516 <- as.character(ny_math15_16$ALL_MTH00NUMVALID_1516)
+ny_math15_16_long <- pivot_longer(ny_math15_16, cols = 6:229 , 
+                                  names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                  names_sep = "_",
+                                  values_to = "score")
+ny_math15_16_long$SUBJECT <- str_sub(ny_math15_16_long$v2, 1,3) 
+ny_math15_16_long$GRADE <- str_sub(ny_math15_16_long$v2, 4,5) 
+ny_math15_16_long$score_type <- str_sub(ny_math15_16_long$v2, 6) 
+ny_math15_16_long$score_type  = toupper(ny_math15_16_long$score_type)
+ny_math15_16_long <- subset(ny_math15_16_long, select = -v2)
+
+ny_math15_16_long <- pivot_wider(ny_math15_16_long, names_from = score_type,
+                                 values_from = score )
+ny_math15_16_long$ST_LEAID <- "NULL"
+
+### ny rla 2015-16
+ny_rla15_16$ALL_RLA00NUMVALID_1516 <- as.character(ny_rla15_16$ALL_RLA00NUMVALID_1516)
+ny_rla15_16_long <- pivot_longer(ny_rla15_16, cols = 6:229 , 
+                                 names_to = c("CATEGORY","v2", "SCHOOL_YEAR"), 
+                                 names_sep = "_",
+                                 values_to = "score")
+ny_rla15_16_long$SUBJECT <- str_sub(ny_rla15_16_long$v2, 1,3) 
+ny_rla15_16_long$GRADE <- str_sub(ny_rla15_16_long$v2, 4,5) 
+ny_rla15_16_long$score_type <- str_sub(ny_rla15_16_long$v2, 6) 
+ny_rla15_16_long$score_type  = toupper(ny_rla15_16_long$score_type)
+ny_rla15_16_long <- subset(ny_rla15_16_long, select = -v2)
+
+ny_rla15_16_long <- pivot_wider(ny_rla15_16_long, names_from = score_type,
+                                values_from = score )
+ny_rla15_16_long$ST_LEAID <- "NULL"
+
+#### combining all data 
+ny_edu <- rbind(ny_20_21, 
+                ny_math18_19_long, ny_rla18_19_long,
+                ny_math17_18_long, ny_rla17_18_long,
+                ny_math16_17_long, ny_rla16_17_long,
+                ny_math15_16_long, ny_rla15_16_long)
+
+
+
+#### note: after dowloading and reading the file follow from here:
+
+ny_edu <- 
+  ny_edu %>%
+  separate(PCTPROF, c("num1", "num2"), "-|LE|LT|GT|GE", remove =FALSE)
+
+## TODO: viz to show how many unreported scores we have
+# ny_edu_ps <- filter(ny_edu, PCTPROF == "PS")
+
+## data without PS
+# ny_edu_cl <- filter(ny_edu, PCTPROF != "PS")
+
+### we don't remove NAs for furthur analysis of missing values
+## ny_edu_cl <- filter(ny_edu_cl, !is.na(NUMVALID))
+
+ny_edu$num1 <- as.numeric(ny_edu$num1)
+ny_edu$num2 <- as.numeric(ny_edu$num2)
+ny_edu$avg_num<- (ny_edu$num1 + ny_edu$num2) /2
+
+ny_edu$PASSED <- coalesce(ny_edu$avg_num, ny_edu$num1, ny_edu$num2)
+
+ny_edu <- subset(ny_edu, select = -c(num1, num2, avg_num))
+
+ny_edu <- 
+ny_edu %>%
+  mutate(
+    CATEGORY_DESC = case_when(
+      CATEGORY == "CWD" ~ "Children with disabilities ",
+      CATEGORY == "ECD" ~ "Economically disadvantaged",
+      CATEGORY == "F" ~ "Female",
+      CATEGORY == "FCS" ~ "Foster Care Status",
+      CATEGORY == "HOM" ~ "Homeless Enrolled",
+      CATEGORY == "LEP" ~ "English Learner",
+      CATEGORY == "M" ~ "Male",
+      CATEGORY == "MAM" ~ "American Indian/Alaska Native",
+      CATEGORY == "MAS" ~ "Asian/Pacific Islander",
+      CATEGORY == "MBL" ~ "Black",
+      CATEGORY == "MHI" ~ "Hispanic",
+      CATEGORY == "MIG" ~ "Migrant",
+      CATEGORY == "MIL" ~ "Military Connected Student Status",
+      CATEGORY == "MTR" ~ "Two or More Races",
+      CATEGORY == "MWH" ~ "White",
+      CATEGORY == "ALL" ~ "ALL"
+    )
+  )
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    CATEGORY_TPYE = case_when(
+      CATEGORY == "CWD" | CATEGORY == "FCS" | CATEGORY == "HOM"
+        | CATEGORY == "ECD" | CATEGORY == "LEP"  | CATEGORY == "MIG" 
+        | CATEGORY == "MIL" ~ "Special Status" ,
+      CATEGORY == "F" | CATEGORY == "M" ~ "Sex",
+      CATEGORY == "MAM" |
+      CATEGORY == "MAS" |
+      CATEGORY == "MBL" |
+      CATEGORY == "MHI" |
+      CATEGORY == "MTR" |
+      CATEGORY == "MWH" ~ "Race/Ethnicity",
+      CATEGORY == "ALL" ~ "ALL"
+    )
+  )
+
+
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    SCHOOL_YEAR = case_when(
+      SCHOOL_YEAR == '2020-2021' ~ "2020-21",
+      SCHOOL_YEAR == '1819' ~ "2018-19",
+      SCHOOL_YEAR == '1718' ~ "2017-18",
+      SCHOOL_YEAR == '1617' ~ "2016-17",
+      SCHOOL_YEAR == '1516' ~ "2015-16",
+    )
+  )
+
+ny_edu <- 
+  ny_edu %>%
+  mutate(
+    GRADE = case_when(
+      GRADE == "00" ~ "ALL",
+      TRUE ~ GRADE))
+
+ny_edu <- 
+  ny_edu %>% 
+    rename( "District" = "LEANM")
+
+ny_edu_final <- subset(ny_edu, select = -c(STNAM, LEAID, ST_LEAID, DATE_CUR))
+ny_edu_final$NUMVALID <- as.numeric(ny_edu_final$NUMVALID)
+ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
+
+```
+
+As discussed in the previous part, if the student numbers are less than 5 in a category / grade for a district, the Percent Proficient numbers are masked to protect the students identity. Although this is not null values in the data we cannot perform any analysis at the performance level. In this graph we are exploring what student category is impacted most by the suppression of data.
+We can see that students with two or more races (MTR) are impacted the most by the masking of the data. There are more that 50k students in total that their proficiency results are not available over the 5 year school period that we have done our analysis. This graph can also indicate student bodies that are the most sparsely distributed among all districts / categories. While we might not be able to fully analyze the impact of the masked data on the performance results we have highlighted this missing data here.
+
+
+``` {r}
+### missing values
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY != "ALL", PCTPROF =="PS") |> 
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)/1000) |>
+
+  
+  ggplot(aes(x = reorder(CATEGORY, -Students_Count), y = Students_Count ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Number of Stduent Unreported for Identity Protection (2015-2021)')+
+  labs(x='All Stdents Categories', y='Number in Thousands')+
+  theme_bw(13)+
+  scale_fill_brewer(palette="Paired")+
+    annotate("label", x=12.5, y=30, size =3,
+    label= 
+"MTR: Two or more races
+MHI: Hispanic
+CWD: Children with disabilities
+MBL: Black
+MAS: Asian/Pacific Islander
+HOM: Homeless Enrolled
+LEP: English Learner
+MAM: American Indian/Alaska Native
+ECD:Economically disadvantaged
+MIG: Migrant
+F: Female
+M: Male
+FCS: Foster Care Status
+MWH: White
+MIL: Military Connected Student Status")
+```
+
+As a result of the data structure and the transformations outlined before null values were generated for the PASSED variable (numeric value of Percent Proficient). If the Percent Proficient is marked as PS we have a null value for PASSED. If in the wide format a Percent Proficient is not reported for a grade or category we will also have a null value. We have also observed that there are very small school districts with only high school grades and all other grades are missing. It appears that some districts might not offer all grades but the data is reported as missing for these districts. Further discussion with subject matter experts needed to clarify school district boundaries and reporting requirements to fully understand the missing data patterns. Here we have used the VIM package to visualize the missing data pattern. If NUMVLAID (student number) is missing we always have missing values for PASSED (32% of data). The scenario when we have missing data for PASSED but the NUMVALID is not missing is due to the transformation of PS (suppressed data for privacy protection). We have converted PS to null values so we can have a numeric value for the PASSED variable (this is about 19% of data). 
+
+``` {r, error=TRUE}
+library("VIM")
+aggr(ny_edu_final, sortVars =TRUE, cex.axis=.8, oma = c(10,5,5,3))+
+title(main = "Missing Value Distribution")
+```
