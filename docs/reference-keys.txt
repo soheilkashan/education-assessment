@@ -7,5 +7,7 @@ sources
 cleaning-transformation
 missing-value-analysis
 results
+demographics
+exploring-new-york-student-reported-demog
 interactive-component
 conclusion

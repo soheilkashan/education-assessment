@@ -1,6 +1,5 @@
 # Results
 
-How many students?
 
 ``` {r}
 ## reading raw data from school year 2016 to 2019
@@ -279,6 +278,23 @@ ny_edu_final <- subset(ny_edu, select = -c(STNAM, LEAID, ST_LEAID, DATE_CUR))
 ny_edu_final$NUMVALID <- as.numeric(ny_edu_final$NUMVALID)
 ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
 ```
+
+
+
+## Demographics 
+### Exploring New York Student reported demog 
+
+
+
+
+
+
+
+
+
+
+
+
 ``` {r}
 ny_edu_final |>
   filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity") |>
