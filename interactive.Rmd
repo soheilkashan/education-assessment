@@ -1,3 +1,190 @@
 # Interactive component
 
+```{r}
+## mean values for all categories
+data_d3 <- ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL",
+          NUMVALID>10) |>
+  group_by(CATEGORY, CATEGORY_DESC) |>
+  summarise(mean(PASSED))
+```
 
+<body>
+  <text x="0" y="80">This bar chart potentially displays the correct order of ranking of student's academic performance by groups.</text>
+  <text x="0" y="80">Order A is ABCD;</text>
+  <text x="0" y="80">Order B is ACBD;</text>
+  <text x="0" y="80">Order C is BDCA.</text>
+  
+  <!-- Bar Chart for SVG-->
+  <svg width="500" height="500" id="svg2"></svg>
+  
+  <text x="0" y="80">Which order is correct? Select your choice and see if you are right.</text>
+  <button onclick="wrongOne()">Order A</button>
+  <button onclick="right()">Order B</button>
+  <button onclick="wrongTwo()">Order C</button>
+  <p id="typo" class="fancy">Answer</p>
+  <text x="0" y="80">Press the 'Solution' button to see the answer.</text>
+  <button onclick="updateData()">Solution</button>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+
+  <script>
+    //Bar Chart
+    //Creating data
+    let data2 = [{
+        name: 'MWH',
+        value: 10
+      },
+      {
+        name: 'MTR',
+        value: 10
+      },
+      {
+        name: 'MIL',
+        value: 10
+      },
+      {
+        name: 'MIG',
+        value: 10
+      },
+      {
+        name: 'MHI',
+        value: 10
+      },
+      {
+        name: 'MBL',
+        value: 10
+      },
+      {
+        name: 'MAS',
+        value: 10
+      },
+      {
+        name: 'MAM',
+        value: 10
+      },
+      {
+        name: 'LEP',
+        value: 10
+      },
+      {
+        name: 'HOM',
+        value: 10
+      }
+    ]
+    //Creating svg, margin, width, height
+    let svg2 = d3.select("#svg2")
+    let margin = 30;
+    let width = 500 - 2 * margin;
+    let height = 500 - 2 * margin;
+
+    //Creating chart by using g in svg2.
+    let chart2 = svg2.append('g')
+      .attr('transform', 'translate(30, 30)');
+    //yScale
+    let yScale2 = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, 100]);
+
+    //append g to create y axis
+    chart2.append('g')
+      .call(d3.axisLeft(yScale2));
+
+    //xScale
+    let xScale2 = d3.scaleBand()
+      .range([0, width])
+      .domain(data2.map((d) => d.name))
+      .padding(0.2);
+
+    //append g to create x axis
+    chart2.append('g')
+      .attr('transform', 'translate(0, 440)')
+      .call(d3.axisBottom(xScale2));
+
+    //Creating color scale using scaleOrdinal and schemeCategory10
+    let colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+
+    //Selecting all in chart2 to set/append rectangular, and axis.
+    chart2.selectAll()
+      .data(data2)
+      .enter()
+      .append('rect')
+      .attr('x', (d) => xScale2(d.name))
+      .attr('y', (d) => yScale2(d.value))
+      .attr('height', (d) => height - yScale2(d.value))
+      .attr('width', xScale2.bandwidth())
+
+    //Putting colors on the bar
+    chart2.selectAll('rect')
+      .style('fill', d => colorScale(d.name));
+
+    function wrongOne() {
+      d3.select("#typo").text("Incorrect");
+        }
+    function wrongTwo() {
+      d3.select("#typo").text("Incorrect");
+        }
+    function right() {
+      d3.select("#typo").text("Correct");
+        }
+    
+    function updateData() {
+      let data2 = [{
+          name: 'MWH',
+          value: 32
+        },
+        {
+          name: 'MTR',
+          value: 65
+        },
+        {
+          name: 'MIL',
+          value: 87
+        },
+        {
+          name: 'MIG',
+          value: 19
+        },
+        {
+          name: 'MHI',
+          value: 55
+        },
+        {
+          name: 'MBL',
+          value: 41
+        },
+        {
+          name: 'MAS',
+          value: 72
+        },
+        {
+          name: 'MAM',
+          value: 64
+        },
+        {
+          name: 'LEP',
+          value: 11
+        },
+        {
+          name: 'HOM',
+          value: 27
+        }
+      ]
+      let u2 = chart2.selectAll("rect")
+        .data(data2)
+      u2
+        .enter()
+        .append('rect')
+        .merge(u2)
+        .transition()
+        .duration(2000)
+        .attr('x', (d) => xScale2(d.name))
+        .attr('y', (d) => yScale2(d.value))
+        .attr('height', (d) => height - yScale2(d.value))
+        .attr('width', xScale2.bandwidth())
+
+      chart2.selectAll('rect')
+        .style('fill', d => colorScale(d.name));
+
+    }
+
+  </script>

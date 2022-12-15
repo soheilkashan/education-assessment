@@ -504,5 +504,204 @@ While there isn’t a significant variation in median of district sizes for diff
 ## Proficiency Results
 
 ```{r}
+##### Performance Over Years
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = SCHOOL_YEAR)) + 
+  geom_density_ridges2( alpha = .8, fill = "#1f78b4")+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Proficiency Percent in Math / RLA Over the Years')+
+  labs(x='Proficiency Percent', y='School Year')+
+  theme_bw(11)
+  
 
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = GRADE)) + 
+  geom_density_ridges2( alpha = .8, fill = "#1f78b4")+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Proficiency Percent in Math / RLA by Grade')+
+  labs(x='Percent Proficient', y='Grade')+
+  theme_bw(11)
 ```
+
+
+
+
+
+***
+<br>
+
+```{r}
+##### Performance Over Years
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = SCHOOL_YEAR)) + 
+  geom_density_ridges2( alpha = .8, fill = "#1f78b4")+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Proficiency Percent in Math / RLA Over the Years')+
+  labs(x='Proficiency Percent', y='School Year')+
+  theme_bw(11)
+  
+library(ggridges)
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY == "ALL") |>
+  ggplot( aes(x = PASSED, y = GRADE)) + 
+  geom_density_ridges2( alpha = .8, fill = "#1f78b4")+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Proficiency Percent in Math / RLA by Grade')+
+  labs(x='Percent Proficient', y='Grade')+
+  theme_bw(11)
+```
+
+**What is the percentage of students proficient in Math / RLA?**
+
+The ridgeline graphs suggest that the proficiency percentage in general is relatively stable over the years. There is a concentration of observations around 50% but there are signs of potential bi-modality especially for RLA around 90% over the years. To further investigate this we have also created a ridgeline of proficiency by grades. We can observe from the graph that the performance in High School is significantly better than other grades. The underlying reason for this is unclear for us and requires some input from subject matter experts. 
+
+***
+<br>
+
+```{r}
+#### box plot sex by grade
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Sex",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED, median) )) + 
+  geom_boxplot()+
+  facet_grid(SUBJECT~GRADE)+
+  ggtitle('Proficiency Percent by Grade & Identified Sex')+
+  labs(y='Percent Proficient', x='Identified Sex')+
+  theme_bw(12)
+
+### box plot race by subject
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY_DESC, PASSED, median, na.rm = TRUE) )) + 
+  geom_boxplot()+
+  ggtitle('Proficiency Percent in Math / RLA by Race/Ethnicity')+
+  labs(y='Percent Proficient', x='Race/Ethnicity')+
+  theme_bw(11)
+### ethnicity by grades
+
+ny_edu_final |>
+  filter( GRADE != "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity",
+          NUMVALID>10, SCHOOL_YEAR=='2018-19') |>
+  ggplot(aes(CATEGORY, GRADE, fill =PASSED))+
+  ggtitle('Proficiency Percent by Race/Ethnicity and Grade')+
+  labs(y='Grade', x='Race/Ethnicity')+
+  scale_fill_gradient(low = "#e0ecf4", high = '#8856a7') + 
+  geom_tile()
+
+#### box plot of students status
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", CATEGORY_TPYE == "Special Status",
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED) )) + 
+  geom_boxplot()+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Proficiency Percent by Status')+
+  labs(y='Percent Proficient', x='Reported Status')+
+  theme_bw(12)
+
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL", 
+          NUMVALID>10) |>
+  ggplot( aes(y = PASSED, , x = reorder(CATEGORY, PASSED, median, na.rm = TRUE) )) + 
+  geom_boxplot()+
+  ggtitle('Proficiency Percent by All Categories')+
+  labs(y='Percent Proficient', x='All Categories')+
+  theme_bw(12)
+
+library(knitr)
+summary <- ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY != "ALL") |>
+  group_by(CATEGORY, CATEGORY_DESC) |>
+  summarise()
+
+kable(summary)
+```
+
+
+**How do students from different status, sex, and background performed in the tests?**
+
+The proficiency results based on identified sex suggests that the perfromance of students who identified as female is overall better than male students across all grades and subjects. The difference in Math is relatively smaller but in RLA there is a bigger gap. As observed in the previous part the high school performance is also better than other grades for both female and male students. 
+
+The proficiency grouped by race and ethnicity suggests a gap among groups. Asian / Pacific Islander students' proficiency percent is higher than other groups. The median for White, multiracial and Asian / Pacific is higher than 50% but the rest of the groups lower than 50% meaning that lower than 50% of students were proficient in the assessments. It’s notable to mention that the top 10% of all groups performed relatively the same but the median among different groups are very different. This might suggest an interaction between background and other factors such as higher socioeconomic status. We don’t have the relevant data points to explore this but this is an interesting topic to be explored in the future works.
+
+There is a large gap in the median proficiency percent when it comes to groups with special status. The groups reported here are not really comparable by nature. The main takeaway from the exploration is that students with LEP (English Learner), CWD (Children with Disability), and HOM (Homeless) status have relatively lower proficiency rates (all less than 30% median) and could potentially benefit the most from more resources. 
+
+
+
+
+***
+<br>
+```{r, fig.height = 9, fig.width = 8}
+
+### cleaveland plot schools
+ny_edu_final |>
+  filter( GRADE == "ALL", CATEGORY == "ALL",
+          PASSED>90, NUMVALID < 3000, SCHOOL_YEAR == '2018-19') |>
+  ggplot( aes(y = reorder(District, PASSED), x = PASSED)) + 
+  geom_point()+
+  facet_wrap(~SUBJECT)+
+  ggtitle('Top Districts (less than 3K students)')+
+  labs(x='Proficiency Percent', y='School District')+
+  theme_bw()
+
+
+  g_math <-
+  ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'MTH',
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
+    ggtitle('Top Districts (more than 3K students) for Math')+
+    labs(x='Proficiency Percent', y='School District')+
+    theme_bw()
+
+  g_rla <-
+    ny_edu_final |>
+    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'RLA',
+            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
+    ggplot() + 
+    geom_point(aes(y = reorder(District, PASSED), x = PASSED, color='red'))+
+    guides(color = FALSE)+
+    ggtitle('Top Districts (more than 3K students) for RLA')+
+    labs(x='Proficiency Percent', y='School District')+
+    theme_bw()
+  
+  library(gridExtra)
+  library(grid)
+  grid.arrange(g_math, g_rla)
+```
+
+
+**What are the top school districts in the state of NY?**
+
+We have used Cleveland dot plots to visualize the top school districts in the state of NY. Since the districts with very high proficiency percentages seem to be all concentrated on the smaller districts we have decided to divide the chart to districts with higher than 3k students and schools with lower than 3k students. There are many districts with lower than 3k students with above 90% proficiency rate. The data suggests that many of these schools are Charter schools and the RLA and Math performance are both very high. The schools with more than 3k students in general have a lower proficiency rate in both Math and RLA. These charts suggest that there is a big gap in performance among different school districts and it seems to be correlated with school district size.
+
+***
+<br>
+
+```{r}
+#### math vs rla
+ny_edu_sub <- filter(ny_edu_final,  GRADE == "ALL", CATEGORY == "ALL")
+ny_edu_sub  <- subset(ny_edu_sub, select = c(District, SUBJECT, PASSED, SCHOOL_YEAR))
+ny_edu_sub <- pivot_wider(ny_edu_sub, names_from = SUBJECT, values_from = PASSED)
+ ny_edu_sub  |>
+    ggplot(aes(x=MTH,y=RLA ))+
+    geom_point(alpha=0.3)+
+   geom_smooth(method=lm, se=FALSE)+
+   ggtitle('Math and RLA Plot')+
+   labs(x='Math', y='RLA')
+```
+
+**Are Mathematics and Reading / Language Art assessment results correlated?**
+
+Looking at the scatterplot of the two assessments we can observe that the results seem to be correlated. The school districts with better Math proficiency ratios usually have better RLA proficiency ratios as well. 
+
+

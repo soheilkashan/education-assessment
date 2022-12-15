@@ -24,7 +24,7 @@ New York School Districts" />
 <meta name="author" content="Soheil Fakhrieh Kashan / Wangtao Zheng" />
 
 
-<meta name="date" content="2022-12-14" />
+<meta name="date" content="2022-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -164,6 +164,99 @@ This is outlined on the US Department of Education website:
 </div>
 <div id="proficiency-results" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> Proficiency Results<a href="results.html#proficiency-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-16-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<hr />
+<p><br></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p><strong>What is the percentage of students proficient in Math / RLA?</strong></p>
+<p>The ridgeline graphs suggest that the proficiency percentage in general is relatively stable over the years. There is a concentration of observations around 50% but there are signs of potential bi-modality especially for RLA around 90% over the years. To further investigate this we have also created a ridgeline of proficiency by grades. We can observe from the graph that the performance in High School is significantly better than other grades. The underlying reason for this is unclear for us and requires some input from subject matter experts.</p>
+<hr />
+<p><br></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-18-2.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-18-3.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-18-4.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-18-5.png" width="672" /></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">CATEGORY</th>
+<th align="left">CATEGORY_DESC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CWD</td>
+<td align="left">Children with disabilities</td>
+</tr>
+<tr class="even">
+<td align="left">ECD</td>
+<td align="left">Economically disadvantaged</td>
+</tr>
+<tr class="odd">
+<td align="left">F</td>
+<td align="left">Female</td>
+</tr>
+<tr class="even">
+<td align="left">FCS</td>
+<td align="left">Foster Care Status</td>
+</tr>
+<tr class="odd">
+<td align="left">HOM</td>
+<td align="left">Homeless Enrolled</td>
+</tr>
+<tr class="even">
+<td align="left">LEP</td>
+<td align="left">English Learner</td>
+</tr>
+<tr class="odd">
+<td align="left">M</td>
+<td align="left">Male</td>
+</tr>
+<tr class="even">
+<td align="left">MAM</td>
+<td align="left">American Indian/Alaska Native</td>
+</tr>
+<tr class="odd">
+<td align="left">MAS</td>
+<td align="left">Asian/Pacific Islander</td>
+</tr>
+<tr class="even">
+<td align="left">MBL</td>
+<td align="left">Black</td>
+</tr>
+<tr class="odd">
+<td align="left">MHI</td>
+<td align="left">Hispanic</td>
+</tr>
+<tr class="even">
+<td align="left">MIG</td>
+<td align="left">Migrant</td>
+</tr>
+<tr class="odd">
+<td align="left">MIL</td>
+<td align="left">Military Connected Student Status</td>
+</tr>
+<tr class="even">
+<td align="left">MTR</td>
+<td align="left">Two or More Races</td>
+</tr>
+<tr class="odd">
+<td align="left">MWH</td>
+<td align="left">White</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How do students from different status, sex, and background performed in the tests?</strong></p>
+<p>The proficiency results based on identified sex suggests that the perfromance of students who identified as female is overall better than male students across all grades and subjects. The difference in Math is relatively smaller but in RLA there is a bigger gap. As observed in the previous part the high school performance is also better than other grades for both female and male students.</p>
+<p>The proficiency grouped by race and ethnicity suggests a gap among groups. Asian / Pacific Islander students’ proficiency percent is higher than other groups. The median for White, multiracial and Asian / Pacific is higher than 50% but the rest of the groups lower than 50% meaning that lower than 50% of students were proficient in the assessments. It’s notable to mention that the top 10% of all groups performed relatively the same but the median among different groups are very different. This might suggest an interaction between background and other factors such as higher socioeconomic status. We don’t have the relevant data points to explore this but this is an interesting topic to be explored in the future works.</p>
+<p>There is a large gap in the median proficiency percent when it comes to groups with special status. The groups reported here are not really comparable by nature. The main takeaway from the exploration is that students with LEP (English Learner), CWD (Children with Disability), and HOM (Homeless) status have relatively lower proficiency rates (all less than 30% median) and could potentially benefit the most from more resources.</p>
+<hr />
+<p><br>
+<img src="finalproj_files/figure-html/unnamed-chunk-19-1.png" width="768" /><img src="finalproj_files/figure-html/unnamed-chunk-19-2.png" width="768" /></p>
+<p><strong>What are the top school districts in the state of NY?</strong></p>
+<p>We have used Cleveland dot plots to visualize the top school districts in the state of NY. Since the districts with very high proficiency percentages seem to be all concentrated on the smaller districts we have decided to divide the chart to districts with higher than 3k students and schools with lower than 3k students. There are many districts with lower than 3k students with above 90% proficiency rate. The data suggests that many of these schools are Charter schools and the RLA and Math performance are both very high. The schools with more than 3k students in general have a lower proficiency rate in both Math and RLA. These charts suggest that there is a big gap in performance among different school districts and it seems to be correlated with school district size.</p>
+<hr />
+<p><br></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><strong>Are Mathematics and Reading / Language Art assessment results correlated?</strong></p>
+<p>Looking at the scatterplot of the two assessments we can observe that the results seem to be correlated. The school districts with better Math proficiency ratios usually have better RLA proficiency ratios as well.</p>
 
 </div>
 </div>
