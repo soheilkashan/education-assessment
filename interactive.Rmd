@@ -8,10 +8,10 @@
 
 This bar chart will display the **Percent Proficient** in state assessment in Math and RLA for all student categories represented in our data. 
 
-To reveal the results:
+To reveal the results,
 You need to answer the following question by clicking on one of the options (**A, B, C, D**). You will be prompted a message based on your answer.
 
-To see the barchart you need to click on **solution**
+To see the bar chart you need to click on **solution**
 
 ***
 
