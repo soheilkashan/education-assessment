@@ -281,7 +281,7 @@ ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
 
 
 
-## Demographics 
+## Student Demographics
 In this section we will explore the reported demographics and population distribution of NY students. We look for any anomalies, highlight trends and point out any consideration we might need to have before moving forward to review proficiency results. 
 
 <br>
@@ -439,7 +439,70 @@ https://www.census.gov/quickfacts/fact/table/US/PST045221
 
 ***
 <br>
+
+## School District Size
+
+```{r}
+######### histogram of district size
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL") |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram(bins = 20, fill ="#1f78b4", color='black')+
+  ggtitle('Histogram of New York School District Size (student number)')+
+  labs(x='School District Size', y='Count of School District')+
+  theme_bw(12)+
+  scale_fill_brewer(palette="Paired")
+
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>=3000) |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram( bins=10, color='black', fill="#1f78b4")+
+  ggtitle('Histogram of New York School District Size (More than 3000 students)')+
+  labs(x='School District Size', y='Count of School District')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID<3000) |>
+  ggplot(aes(NUMVALID))+
+  geom_histogram( bins=10, color='black', fill="#1f78b4")+
+  ggtitle('Histogram of New York School District Size (Less than 3000 students)')+
+  labs(x='School District Size', y='Count of School District')+
+  theme_bw()+
+  scale_fill_brewer(palette="Paired")
+```
+
+
+**What is the distribution of school district size (number of students)?**
+
+We can observe that the distribution is skewed positively. Majority of the districts have less than 500 students. From looking into the dataset we can easily observe that many of the districts are located in rural and sparse suburbs while districts with higher than 10K are mostly located in NYC and other bigger cities in the state of New York. To observe the difference in the distribution we have divided our histogram into two separate graphs to see the distribution with more than 3K and less than 3K students. 
+
+***
+<br>
+
+```{r}
+### big school districts
+ny_edu_final |>
+  filter( GRADE != "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>3000) |>
+  ggplot(aes(GRADE, NUMVALID))+
+  geom_boxplot(  color='black', fill='#1f78b4')+
+  ggtitle('Boxplot of NY School District by Grade (More than 3000 students)')+
+  labs(x='Grade', y='Count of School District')+
+  theme_bw(11)+
+  scale_fill_brewer(palette="Paired")
+```
+
+
+**Is there any notable difference in the district size by grade?**
+
+While there isn’t a significant variation in median of district sizes for different grade we see an outlier for High School school districts. This outlier is “NEW YORK CITY GEOGRAPHIC DISTRICT  2”, with more than 7K high school students.
+
+
+***
+<br>
+
+## Proficiency Results
+
 ```{r}
 
 ```
-

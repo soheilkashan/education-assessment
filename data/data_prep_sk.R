@@ -292,37 +292,21 @@ ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
 
 
 
-######### histogram of district size
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL") |>
-  ggplot(aes(NUMVALID))+
-  geom_histogram(bins = 20, fill ="#1f78b4", color='black')+
-  facet_wrap(~SCHOOL_YEAR)+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")
 
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>=3000) |>
-  ggplot(aes(NUMVALID))+
-  geom_histogram( bins=10, color='black', fill="#1f78b4")+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")
-
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID<3000) |>
-  ggplot(aes(NUMVALID))+
-  geom_histogram( bins=10, color='black', fill="#1f78b4")+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")
 
 ### big school districts
 ny_edu_final |>
   filter( GRADE != "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>3000) |>
   ggplot(aes(GRADE, NUMVALID))+
   geom_boxplot(  color='black', fill='#33a02c')+
-  theme_bw()+
+  ggtitle('Boxplot of NY School District by Grade (More than 3000 students)')+
+  labs(x='Grade', y='Count of School District')+
+  theme_bw(11)+
   scale_fill_brewer(palette="Paired")
 
+
+
+#NEW YORK CITY GEOGRAPHIC DISTRICT # 2
 
 ##### Performance
 library(ggridges)
