@@ -11,3 +11,4 @@ demographics
 exploring-new-york-student-reported-demog
 interactive-component
 conclusion
+exploring-new-york-student-reported-demographics.

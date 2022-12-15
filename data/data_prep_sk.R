@@ -279,103 +279,16 @@ ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
 ###########################
 ### END of data prep
 
-options(scipen = 999)
-ny_edu_final |>
-  filter(GRADE == "ALL", CATEGORY == "ALL") |>
-  group_by(SCHOOL_YEAR, SUBJECT) |>
-  summarise(Students_Count = sum(NUMVALID)) |>
-  
-  ggplot(aes(x = SCHOOL_YEAR, y = Students_Count, fill = SUBJECT))+
-  geom_bar(stat = "identity", position = "dodge")+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")
 
-####### numbers by grade
-ny_edu_final |>
-  filter( GRADE != "ALL", SUBJECT == "MTH") |>
-  group_by(GRADE, SUBJECT, SCHOOL_YEAR) |>
-  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
-  
-  ggplot(aes(x = GRADE, y = Students_Count))+
-  geom_bar(stat = "identity", fill ="#1f78b4")+
-  facet_wrap(~SCHOOL_YEAR)+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")
+
 
 ##### numbers by categories
 
 
-### students by status
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Special Status") |>
-  group_by(CATEGORY) |>
-  summarise(Students_Count = sum(coalesce(NUMVALID, 0) )) |>
-  ungroup() |>
-  group_by() |>
-  mutate(total = round((Students_Count/sum(Students_Count, na.rm=TRUE)),4)*100 ) |>
-  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
-  geom_bar(stat = "identity", fill ="#1f78b4")+
-  #facet_wrap(~SCHOOL_YEAR)+
-  ggtitle('Distribution of New York Stduents by Status (2015-2021)')+
-  labs(x='Status Type', y='Percentage')+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")+
-  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
-  annotate("label", x=5.5, y=50, 
-    label= 
-"ECD: Economically disadvantaged 
-CWD: Children with disabilities
-LEP: English Learner
-HOM: Homeless Enrolled
-FCS: Foster Care Status
-MIG: Migrant
-MIL: Military Connected Student Status")
 
 
-### students by Gender
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Sex") |>
-  group_by(CATEGORY) |>
-  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
-  ungroup() |>
-  group_by() |>
-  mutate(total = round((Students_Count/sum(Students_Count)),2) ) |>
-  
-  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
-  geom_bar(stat = "identity", fill ="#1f78b4")+
-  #facet_wrap(~SCHOOL_YEAR)+
-  ggtitle('Distribution of New York Stduents by Sex (2015-2021)')+
-  labs(x='Sex', y='Percentage')+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")+
-  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)
 
-### students by Gender
-ny_edu_final |>
-  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity") |>
-  group_by(CATEGORY) |>
-  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
-  ungroup() |>
-  group_by() |>
-  mutate(total = round((Students_Count/sum(Students_Count)),2) ) |>
-  
-  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
-  geom_bar(stat = "identity", fill ="#1f78b4")+
-  #facet_wrap(~SCHOOL_YEAR)+
-  ggtitle('Distribution of New York Stduents by Race/Ethnicity (2015-2021)')+
-  labs(x='Race/Ethnicity', y='Percentage')+
-  theme_bw()+
-  scale_fill_brewer(palette="Paired")+
-  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
-  annotate("label", x=4.5, y=.35, 
-           label= 
- 
-"MWH: White
-MHI: Hispanic
-MBL: Black
-MAS: Asian/Pacific Islander
-MTR: Two or more races
-MAM: American Indian/Alaska Native")
+
 
 
 
@@ -383,7 +296,7 @@ MAM: American Indian/Alaska Native")
 ny_edu_final |>
   filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL") |>
   ggplot(aes(NUMVALID))+
-  geom_histogram(bins = 20, fill ="#33a02c", color='black')+
+  geom_histogram(bins = 20, fill ="#1f78b4", color='black')+
   facet_wrap(~SCHOOL_YEAR)+
   theme_bw()+
   scale_fill_brewer(palette="Paired")
@@ -391,14 +304,14 @@ ny_edu_final |>
 ny_edu_final |>
   filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID>=3000) |>
   ggplot(aes(NUMVALID))+
-  geom_histogram( bins=10, color='black', fill='#33a02c')+
+  geom_histogram( bins=10, color='black', fill="#1f78b4")+
   theme_bw()+
   scale_fill_brewer(palette="Paired")
 
 ny_edu_final |>
   filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY == "ALL", NUMVALID<3000) |>
   ggplot(aes(NUMVALID))+
-  geom_histogram( bins=10, color='black', fill='#33a02c')+
+  geom_histogram( bins=10, color='black', fill="#1f78b4")+
   theme_bw()+
   scale_fill_brewer(palette="Paired")
 

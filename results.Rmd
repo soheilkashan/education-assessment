@@ -282,20 +282,125 @@ ny_edu_final$CATEGORY <- as.factor(ny_edu_final$CATEGORY)
 
 
 ## Demographics 
-### Exploring New York Student reported demog 
+In this section we will explore the reported demographics and population distribution of NY students. We look for any anomalies, highlight trends and point out any consideration we might need to have before moving forward to review proficiency results. 
+
+<br>
 
 
+```{r}
+options(scipen = 999)
+ny_edu_final |>
+  filter(GRADE == "ALL", CATEGORY == "ALL") |>
+  group_by(SCHOOL_YEAR, SUBJECT) |>
+  summarise(Students_Count = sum(NUMVALID)/1000) |>
+  
+  ggplot(aes(x = SCHOOL_YEAR, y = Students_Count, fill = SUBJECT))+
+  geom_bar(stat = "identity", position = "dodge")+
+  ggtitle('Students Assessed for Math and RLA in NY State')+
+  labs(x='School Year', y='Number of Students in Thousands')+
+  theme_bw(13)+
+  scale_fill_brewer(palette="Paired")
+```
 
+**why is there a drop in 2020-21 student count?**
 
+The number of reported students for both Math and RLA assessments are relatively steady year over year from 2015-16 to 2018-19 school years, but we observe a sharp drop in 2020-21 school year. Also, we can observe that the data was not reported for the 2020-21 school year. Upon investigating the Department of Education, we have noticed that the reporting requirements were waived for 2020 and were relaxed for 2021 reporting due to the circumstances of COVID-19 pandemic. This is an important consideration when we analyze the latest school year.
+This is outlined on the US Department of Education website:
+https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html
 
+***
+<br>
 
+```{r}
+####### numbers by grade
+ny_edu_final |>
+  filter( GRADE != "ALL", SUBJECT == "MTH") |>
+  group_by(GRADE, SUBJECT, SCHOOL_YEAR) |>
+  summarise(Students_Count = sum(NUMVALID/1000, na.rm=TRUE)) |>
+  
+  ggplot(aes(x = GRADE, y = Students_Count))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Students Assessed for Math and RLA in NY State')+
+  labs(x='Grade', y='Number of Students in Thousands')+
+  theme_bw(13)+
+  scale_fill_brewer(palette="Paired")
 
+```
 
+**Is 2020-21 school year data underreported for all grades?**
 
+We can observe from the chart that in the 2020-21 school year the high school reported numbers are aligned with previous years but the third through eighth grade were significantly underreported compared to the previous years. The reason for this is not totally clear to us but one interesting fact that we will review in the next section is that generally high schools have better ratios of proficiency assessment results. One theory could be that since the results are better the districts have reported these numbers more compared to the other grades. Another interesting demographic observation is that there are almost always less students in seventh and eighth grades compared to other grades. This is another observation that needs to be discussed with a subject matter expert on this topic. 
 
-
+***
+<br>
 
 ``` {r}
+### students by status
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Special Status") |>
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(coalesce(NUMVALID, 0) )) |>
+  ungroup() |>
+  group_by() |>
+  mutate(total = round((Students_Count/sum(Students_Count, na.rm=TRUE)),4)*100 ) |>
+  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Distribution of New York Stduents by Status (2015-2021)')+
+  labs(x='Status Type', y='Percentage')+
+  theme_bw(13)+
+  scale_fill_brewer(palette="Paired")+
+  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
+  annotate("label", x=5.5, y=50, 
+    label= 
+"ECD: Economically disadvantaged 
+CWD: Children with disabilities
+LEP: English Learner
+HOM: Homeless Enrolled
+FCS: Foster Care Status
+MIG: Migrant
+MIL: Military Connected Student Status")
+
+```
+
+**What is the distribution of students with reported special status?**
+
+We can observe that almost 65% of the students with special status are from Economically disadvantaged categories. We cannot directly compute what percentage of the whole population of students fall into this category. It’s also not clear if there is any overlap in categories. It’s notable to mention that less than 0.3% of students with special status fall into Foster care, Migrant, or with Military connected status.
+
+***
+<br>
+
+```{r}
+### students by Gender
+ny_edu_final |>
+  filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Sex") |>
+  group_by(CATEGORY) |>
+  summarise(Students_Count = sum(NUMVALID, na.rm=TRUE)) |>
+  ungroup() |>
+  group_by() |>
+  mutate(total = round((Students_Count/sum(Students_Count)),2) ) |>
+  
+  ggplot(aes(x = reorder(CATEGORY, -total), y = total ))+
+  geom_bar(stat = "identity", fill ="#1f78b4")+
+  #facet_wrap(~SCHOOL_YEAR)+
+  ggtitle('Distribution of New York Stduents by Sex (2015-2021)')+
+  labs(x='Sex', y='Percentage')+
+  theme_bw(13)+
+  scale_fill_brewer(palette="Paired")+
+  geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)
+
+```
+
+**What is the distribution of students by who they identified (female / male)?**
+
+As expected the distribution is pretty even with slightly more students who identified as male with 52% and 48% who identified as female.
+
+***
+<br>
+```{r}
+
+### students by race
 ny_edu_final |>
   filter( GRADE == "ALL", SUBJECT == "MTH", CATEGORY != "ALL", CATEGORY_TPYE == "Race/Ethnicity") |>
   group_by(CATEGORY) |>
@@ -309,7 +414,7 @@ ny_edu_final |>
   #facet_wrap(~SCHOOL_YEAR)+
   ggtitle('Distribution of New York Stduents by Race/Ethnicity (2015-2021)')+
   labs(x='Race/Ethnicity', y='Percentage')+
-  theme_bw()+
+  theme_bw(12)+
   scale_fill_brewer(palette="Paired")+
   geom_text(aes(label=total), position=position_dodge(width=0.9), vjust=-0.25)+
   annotate("label", x=4.5, y=.35, 
@@ -323,31 +428,18 @@ MTR: Two or more races
 MAM: American Indian/Alaska Native")
 
 ```
+
+**What is the distribution of students by race / ethnicity?**
+
+A notable observation is that NY state has a significantly higher ratio of non-white students compared to US national averages. Per government census around 76% of the US population is white while in NY the ratio of white students is 43%.
+
+Source:
+
+https://www.census.gov/quickfacts/fact/table/US/PST045221
+
+***
+<br>
 ```{r}
 
-  g_math <-
-  ny_edu_final |>
-    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'MTH',
-            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
-    ggplot() + 
-    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
-
-  labs(x='Percentage of Passed Assesment', y='School District')+
-    theme_bw()
-
-
-  g_rla <-
-    ny_edu_final |>
-    filter( GRADE == "ALL", CATEGORY == "ALL", SUBJECT == 'RLA',
-            PASSED>50, NUMVALID > 3000, SCHOOL_YEAR == '2018-19') |>
-    ggplot() + 
-    geom_point(aes(y = reorder(District, PASSED), x = PASSED))+
-    
-    labs(x='Percentage of Passed Assesment', y='School District')+
-    theme_bw()
-  
-  library(gridExtra)
-  library(grid)
-  grid.arrange(g_math, g_rla, nrow = 1)
 ```
 
