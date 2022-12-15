@@ -115,18 +115,28 @@ New York School Districts</a>
             <section class="normal" id="section-">
 <div id="interactive-component" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Interactive component<a href="interactive-component.html#interactive-component" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This bar chart will display the <strong>Percent Proficient</strong> in state assessment in Math and RLA for all student categories represented in our data.</p>
+<p>To reveal the results:
+You need to answer the following question by clicking on one of the options (<strong>A, B, C, D</strong>). You will be prompted a message based on your answer.</p>
+<p>To see the barchart you need to click on <strong>solution</strong></p>
+<hr />
+<p><strong>Which group of students do you think can benefit the most from resources in order to improve their proficiency in Math / RLA assessments?</strong></p>
+<ul>
+<li>A: Children with disabilities</li>
+<li>B: English learner</li>
+<li>C: Migrant</li>
+<li>D: Homeless enrolled</li>
+</ul>
 <body>
-<p><text x="0" y="80">This bar chart potentially displays the correct order of ranking of student’s academic performance by groups.</text>
-<text x="0" y="80">Order A is ABCD;</text>
-<text x="0" y="80">Order B is ACBD;</text>
-<text x="0" y="80">Order C is BDCA.</text></p>
 <!-- Bar Chart for SVG-->
 <svg width="500" height="500" id="svg2">
 </svg>
-<text x="0" y="80">Which order is correct? Select your choice and see if you are right.</text>
-<button onclick="wrongOne()">Order A</button>
-<button onclick="right()">Order B</button>
-<button onclick="wrongTwo()">Order C</button>
+<br> <br>
+<text x="0" y="80">Make your choices among the options by clicking the corresponding buttons and verify if you are right.</text>
+<button onclick="wrong()">A</button>
+<button onclick="right()">B</button>
+<button onclick="wrong()">C</button>
+<button onclick="wrong()">D</button>
 <p id="typo" class="fancy">
 Answer
 </p>
@@ -137,11 +147,15 @@ Answer
     //Bar Chart
     //Creating data
     let data2 = [{
-        name: 'MWH',
+        name: 'MAS',
         value: 10
       },
       {
-        name: 'MTR',
+        name: 'F',
+        value: 10
+      },
+      {
+        name: 'MWH',
         value: 10
       },
       {
@@ -149,11 +163,11 @@ Answer
         value: 10
       },
       {
-        name: 'MIG',
+        name: 'M',
         value: 10
       },
       {
-        name: 'MHI',
+        name: 'MTR',
         value: 10
       },
       {
@@ -161,7 +175,11 @@ Answer
         value: 10
       },
       {
-        name: 'MAS',
+        name: 'MHI',
+        value: 10
+      },
+      {
+        name: 'ECD',
         value: 10
       },
       {
@@ -169,11 +187,23 @@ Answer
         value: 10
       },
       {
-        name: 'LEP',
+        name: 'FCS',
+        value: 10
+      },
+      {
+        name: 'MIG',
         value: 10
       },
       {
         name: 'HOM',
+        value: 10
+      },
+      {
+        name: 'CWD',
+        value: 10
+      },
+      {
+        name: 'LEP',
         value: 10
       }
     ]
@@ -206,9 +236,6 @@ Answer
       .attr('transform', 'translate(0, 440)')
       .call(d3.axisBottom(xScale2));
 
-    //Creating color scale using scaleOrdinal and schemeCategory10
-    let colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-
     //Selecting all in chart2 to set/append rectangular, and axis.
     chart2.selectAll()
       .data(data2)
@@ -218,63 +245,77 @@ Answer
       .attr('y', (d) => yScale2(d.value))
       .attr('height', (d) => height - yScale2(d.value))
       .attr('width', xScale2.bandwidth())
+      .attr("fill", "lightgreen");
 
-    //Putting colors on the bar
-    chart2.selectAll('rect')
-      .style('fill', d => colorScale(d.name));
-
-    function wrongOne() {
-      d3.select("#typo").text("Incorrect");
-        }
-    function wrongTwo() {
-      d3.select("#typo").text("Incorrect");
+    function wrong() {
+      d3.select("#typo").text("It seems that this group can indeed benefit from more resources, but data shows another group with a more severe deficiency level.");
         }
     function right() {
-      d3.select("#typo").text("Correct");
+      d3.select("#typo").text("That's correct based on our data. English learners has the highest deficiency and thus can benefit the most from more resources.");
         }
     
     function updateData() {
       let data2 = [{
-          name: 'MWH',
-          value: 32
-        },
-        {
-          name: 'MTR',
-          value: 65
-        },
-        {
-          name: 'MIL',
-          value: 87
-        },
-        {
-          name: 'MIG',
-          value: 19
-        },
-        {
-          name: 'MHI',
-          value: 55
-        },
-        {
-          name: 'MBL',
-          value: 41
-        },
-        {
-          name: 'MAS',
-          value: 72
-        },
-        {
-          name: 'MAM',
-          value: 64
-        },
-        {
-          name: 'LEP',
-          value: 11
-        },
-        {
-          name: 'HOM',
-          value: 27
-        }
-      ]
+        name: 'MAS',
+        value: 68
+      },
+      {
+        name: 'F',
+        value: 58
+      },
+      {
+        name: 'MWH',
+        value: 57
+      },
+      {
+        name: 'MIL',
+        value: 57
+      },
+      {
+        name: 'M',
+        value: 53
+      },
+      {
+        name: 'MTR',
+        value: 53
+      },
+      {
+        name: 'MBL',
+        value: 49
+      },
+      {
+        name: 'MHI',
+        value: 48
+      },
+      {
+        name: 'ECD',
+        value: 45
+      },
+      {
+        name: 'MAM',
+        value: 44
+      },
+      {
+        name: 'FCS',
+        value: 40
+      },
+      {
+        name: 'MIG',
+        value: 38
+      },
+      {
+        name: 'HOM',
+        value: 34
+      },
+      {
+        name: 'CWD',
+        value: 29
+      },
+      {
+        name: 'LEP',
+        value: 25
+      }
+    ]
       let u2 = chart2.selectAll("rect")
         .data(data2)
       u2
@@ -287,13 +328,84 @@ Answer
         .attr('y', (d) => yScale2(d.value))
         .attr('height', (d) => height - yScale2(d.value))
         .attr('width', xScale2.bandwidth())
-
-      chart2.selectAll('rect')
-        .style('fill', d => colorScale(d.name));
+        .attr("fill", "lightgreen")
 
     }
 
   </script>
+<hr />
+<p><br></p>
+<p><strong>Mapping of Student Categories</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Category</th>
+<th align="left">Category Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">MAS</td>
+<td align="left">Asian/Pacific Islander</td>
+</tr>
+<tr class="even">
+<td align="center">F</td>
+<td align="left">Female</td>
+</tr>
+<tr class="odd">
+<td align="center">MWH</td>
+<td align="left">White</td>
+</tr>
+<tr class="even">
+<td align="center">MIL</td>
+<td align="left">Military Connected Student Status</td>
+</tr>
+<tr class="odd">
+<td align="center">M</td>
+<td align="left">Male</td>
+</tr>
+<tr class="even">
+<td align="center">MTR</td>
+<td align="left">Two or More Races</td>
+</tr>
+<tr class="odd">
+<td align="center">MBL</td>
+<td align="left">Black</td>
+</tr>
+<tr class="even">
+<td align="center">MHI</td>
+<td align="left">Hispanic</td>
+</tr>
+<tr class="odd">
+<td align="center">ECD</td>
+<td align="left">Economically disadvantaged</td>
+</tr>
+<tr class="even">
+<td align="center">MAM</td>
+<td align="left">American Indian/Alaska Native</td>
+</tr>
+<tr class="odd">
+<td align="center">FCS</td>
+<td align="left">Foster Care Status</td>
+</tr>
+<tr class="even">
+<td align="center">MIG</td>
+<td align="left">Migrant</td>
+</tr>
+<tr class="odd">
+<td align="center">HOM</td>
+<td align="left">Homeless Enrolled</td>
+</tr>
+<tr class="even">
+<td align="center">CWD</td>
+<td align="left">Children with disabilities</td>
+</tr>
+<tr class="odd">
+<td align="center">LEP</td>
+<td align="left">English Learner</td>
+</tr>
+</tbody>
+</table>
 
 </div>
             </section>

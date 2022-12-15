@@ -1,27 +1,38 @@
 # Interactive component
 
 ```{r}
-## mean values for all categories
-data_d3 <- ny_edu_final |>
-  filter( GRADE == "ALL", CATEGORY != "ALL",
-          NUMVALID>10) |>
-  group_by(CATEGORY, CATEGORY_DESC) |>
-  summarise(mean(PASSED))
+# links referenced to assist with creating this part:
+# https://stackoverflow.com/questions/58178037/updating-bar-chart-with-a-button-press
+# https://stackoverflow.com/questions/21685943/change-button-text-using-d3js
 ```
 
+This bar chart will display the **Percent Proficient** in state assessment in Math and RLA for all student categories represented in our data. 
+
+To reveal the results:
+You need to answer the following question by clicking on one of the options (**A, B, C, D**). You will be prompted a message based on your answer.
+
+To see the barchart you need to click on **solution**
+
+***
+
+**Which group of students do you think can benefit the most from resources in order to improve their proficiency in Math / RLA assessments?**
+
+ * A: Children with disabilities
+ * B: English learner 
+ * C: Migrant
+ * D: Homeless enrolled
+
+
 <body>
-  <text x="0" y="80">This bar chart potentially displays the correct order of ranking of student's academic performance by groups.</text>
-  <text x="0" y="80">Order A is ABCD;</text>
-  <text x="0" y="80">Order B is ACBD;</text>
-  <text x="0" y="80">Order C is BDCA.</text>
   
   <!-- Bar Chart for SVG-->
   <svg width="500" height="500" id="svg2"></svg>
-  
-  <text x="0" y="80">Which order is correct? Select your choice and see if you are right.</text>
-  <button onclick="wrongOne()">Order A</button>
-  <button onclick="right()">Order B</button>
-  <button onclick="wrongTwo()">Order C</button>
+  <br> <br>
+  <text x="0" y="80">Make your choices among the options by clicking the corresponding buttons and verify if you are right.</text>
+  <button onclick="wrong()">A</button>
+  <button onclick="right()">B</button>
+  <button onclick="wrong()">C</button>
+  <button onclick="wrong()">D</button>
   <p id="typo" class="fancy">Answer</p>
   <text x="0" y="80">Press the 'Solution' button to see the answer.</text>
   <button onclick="updateData()">Solution</button>
@@ -31,11 +42,15 @@ data_d3 <- ny_edu_final |>
     //Bar Chart
     //Creating data
     let data2 = [{
-        name: 'MWH',
+        name: 'MAS',
         value: 10
       },
       {
-        name: 'MTR',
+        name: 'F',
+        value: 10
+      },
+      {
+        name: 'MWH',
         value: 10
       },
       {
@@ -43,11 +58,11 @@ data_d3 <- ny_edu_final |>
         value: 10
       },
       {
-        name: 'MIG',
+        name: 'M',
         value: 10
       },
       {
-        name: 'MHI',
+        name: 'MTR',
         value: 10
       },
       {
@@ -55,7 +70,11 @@ data_d3 <- ny_edu_final |>
         value: 10
       },
       {
-        name: 'MAS',
+        name: 'MHI',
+        value: 10
+      },
+      {
+        name: 'ECD',
         value: 10
       },
       {
@@ -63,11 +82,23 @@ data_d3 <- ny_edu_final |>
         value: 10
       },
       {
-        name: 'LEP',
+        name: 'FCS',
+        value: 10
+      },
+      {
+        name: 'MIG',
         value: 10
       },
       {
         name: 'HOM',
+        value: 10
+      },
+      {
+        name: 'CWD',
+        value: 10
+      },
+      {
+        name: 'LEP',
         value: 10
       }
     ]
@@ -100,9 +131,6 @@ data_d3 <- ny_edu_final |>
       .attr('transform', 'translate(0, 440)')
       .call(d3.axisBottom(xScale2));
 
-    //Creating color scale using scaleOrdinal and schemeCategory10
-    let colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-
     //Selecting all in chart2 to set/append rectangular, and axis.
     chart2.selectAll()
       .data(data2)
@@ -112,63 +140,77 @@ data_d3 <- ny_edu_final |>
       .attr('y', (d) => yScale2(d.value))
       .attr('height', (d) => height - yScale2(d.value))
       .attr('width', xScale2.bandwidth())
+      .attr("fill", "lightgreen");
 
-    //Putting colors on the bar
-    chart2.selectAll('rect')
-      .style('fill', d => colorScale(d.name));
-
-    function wrongOne() {
-      d3.select("#typo").text("Incorrect");
-        }
-    function wrongTwo() {
-      d3.select("#typo").text("Incorrect");
+    function wrong() {
+      d3.select("#typo").text("It seems that this group can indeed benefit from more resources, but data shows another group with a more severe deficiency level.");
         }
     function right() {
-      d3.select("#typo").text("Correct");
+      d3.select("#typo").text("That's correct based on our data. English learners has the highest deficiency and thus can benefit the most from more resources.");
         }
     
     function updateData() {
       let data2 = [{
-          name: 'MWH',
-          value: 32
-        },
-        {
-          name: 'MTR',
-          value: 65
-        },
-        {
-          name: 'MIL',
-          value: 87
-        },
-        {
-          name: 'MIG',
-          value: 19
-        },
-        {
-          name: 'MHI',
-          value: 55
-        },
-        {
-          name: 'MBL',
-          value: 41
-        },
-        {
-          name: 'MAS',
-          value: 72
-        },
-        {
-          name: 'MAM',
-          value: 64
-        },
-        {
-          name: 'LEP',
-          value: 11
-        },
-        {
-          name: 'HOM',
-          value: 27
-        }
-      ]
+        name: 'MAS',
+        value: 68
+      },
+      {
+        name: 'F',
+        value: 58
+      },
+      {
+        name: 'MWH',
+        value: 57
+      },
+      {
+        name: 'MIL',
+        value: 57
+      },
+      {
+        name: 'M',
+        value: 53
+      },
+      {
+        name: 'MTR',
+        value: 53
+      },
+      {
+        name: 'MBL',
+        value: 49
+      },
+      {
+        name: 'MHI',
+        value: 48
+      },
+      {
+        name: 'ECD',
+        value: 45
+      },
+      {
+        name: 'MAM',
+        value: 44
+      },
+      {
+        name: 'FCS',
+        value: 40
+      },
+      {
+        name: 'MIG',
+        value: 38
+      },
+      {
+        name: 'HOM',
+        value: 34
+      },
+      {
+        name: 'CWD',
+        value: 29
+      },
+      {
+        name: 'LEP',
+        value: 25
+      }
+    ]
       let u2 = chart2.selectAll("rect")
         .data(data2)
       u2
@@ -181,10 +223,31 @@ data_d3 <- ny_edu_final |>
         .attr('y', (d) => yScale2(d.value))
         .attr('height', (d) => height - yScale2(d.value))
         .attr('width', xScale2.bandwidth())
-
-      chart2.selectAll('rect')
-        .style('fill', d => colorScale(d.name));
+        .attr("fill", "lightgreen")
 
     }
 
   </script>
+
+***
+<br>
+
+**Mapping of Student Categories**
+
+| Category	| Category Description |
+| :-------: | :------------------- |
+| MAS	      | Asian/Pacific Islander|
+| F	| Female
+| MWH	| White
+| MIL	| Military Connected Student Status
+| M	| Male
+| MTR	| Two or More Races
+| MBL	| Black
+| MHI	| Hispanic
+| ECD	| Economically disadvantaged
+| MAM	| American Indian/Alaska Native
+| FCS	| Foster Care Status
+| MIG	| Migrant
+| HOM	| Homeless Enrolled
+| CWD	| Children with disabilities
+| LEP	| English Learner
